@@ -58,22 +58,22 @@ async function cloneJsSdk(dir: string): Promise<void> {
 
         const gitArgs = alreadyCloned
             ? // Local repo exists already: just update it and checkout the tag.
-              // Fetch only the tag we need.
-              //      git fetch origin tag v2.950.0 --no-tags
-              ['-C', dir, 'fetch', '--quiet', 'origin', 'tag', tag, '--no-tags']
+            // Fetch only the tag we need.
+            //      git fetch origin tag v2.950.0 --no-tags
+            ['-C', dir, 'fetch', '--quiet', 'origin', 'tag', tag, '--no-tags']
             : // Local repo does not exist: clone it.
-              [
-                  '-c',
-                  'advice.detachedHead=false',
-                  'clone',
-                  '--quiet',
-                  '-b',
-                  tag,
-                  '--depth',
-                  '1',
-                  'https://github.com/aws/aws-sdk-js.git',
-                  dir,
-              ]
+            [
+                '-c',
+                'advice.detachedHead=false',
+                'clone',
+                '--quiet',
+                '-b',
+                tag,
+                '--depth',
+                '1',
+                'https://github.com/aws/aws-sdk-js.git',
+                dir,
+            ]
 
         const gitCmd = proc.execFile('git', gitArgs, { encoding: 'utf8' })
 
@@ -244,6 +244,10 @@ void (async () => {
         {
             serviceJsonPath: 'src/amazonqFeatureDev/client/codewhispererruntime-2022-11-11.json',
             serviceName: 'FeatureDevProxyClient',
+        },
+        {
+            serviceJsonPath: 'src/amazonqGumby/client/service-2.json',
+            serviceName: 'SEGClient',
         },
     ]
     await generateServiceClients(serviceClientDefinitions)

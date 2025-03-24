@@ -69,7 +69,7 @@ export interface AWSClientBuilder {
 }
 
 export class DefaultAWSClientBuilder implements AWSClientBuilder {
-    public constructor(private readonly awsContext: AwsContext) {}
+    public constructor(private readonly awsContext: AwsContext) { }
 
     public async createAwsService<T extends AWS.Service>(
         type: new (o: ServiceConfigurationOptions) => T,
@@ -83,7 +83,7 @@ export class DefaultAWSClientBuilder implements AWSClientBuilder {
         const opt = { ...options }
         delete opt.onRequestSetup
 
-        if (!opt.credentials && !opt.token) {
+        if (false) {
             const shim = this.awsContext.credentialsShim
 
             if (!shim) {

@@ -23,6 +23,7 @@
         "./amazonqDoc": "./dist/src/amazonqDoc/index.js",
         "./amazonqScan": "./dist/src/amazonqScan/index.js",
         "./amazonqTest": "./dist/src/amazonqTest/index.js",
+        "./amazonqSeg": "./dist/src/amazonqSeg/index.js",
         "./codewhispererChat": "./dist/src/codewhispererChat/index.js",
         "./test": "./dist/src/test/index.js",
         "./testWeb": "./dist/src/testWeb/index.js",

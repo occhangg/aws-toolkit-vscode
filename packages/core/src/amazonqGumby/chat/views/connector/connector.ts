@@ -27,7 +27,7 @@ class UiMessage {
     readonly type: GumbyMessageType = 'chatMessage'
     readonly status: string = 'info'
 
-    public constructor(protected tabID: string) {}
+    public constructor(protected tabID: string) { }
 }
 
 export class ErrorMessage extends UiMessage {
@@ -74,7 +74,7 @@ export class AuthenticationUpdateMessage {
     constructor(
         readonly gumbyEnabled: boolean,
         readonly authenticatingTabIDs: string[]
-    ) {}
+    ) { }
 }
 
 export class AuthNeededException extends UiMessage {
@@ -180,7 +180,7 @@ export class UpdatePlaceholderMessage extends UiMessage {
 }
 
 export class AppToWebViewMessageDispatcher {
-    constructor(private readonly appsToWebViewMessagePublisher: MessagePublisher<any>) {}
+    constructor(private readonly appsToWebViewMessagePublisher: MessagePublisher<any>) { }
 
     public sendErrorMessage(message: ErrorMessage) {
         this.appsToWebViewMessagePublisher.publish(message)

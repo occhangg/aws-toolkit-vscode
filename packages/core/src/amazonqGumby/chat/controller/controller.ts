@@ -61,6 +61,16 @@ import {
     validateSQLMetadataFile,
 } from '../../../codewhisperer/service/transformByQ/transformFileHandler'
 import { getAuthType } from '../../../auth/utils'
+import {
+    startAgent,
+    sendMsgToAgent,
+    uploadZipFile,
+    listMsgFromAgent,
+    listClientActions,
+} from '../../../codewhisperer/service/transformByQ/SEGApiHandler'
+import admZip from 'adm-zip'
+import { donwloadByArtifactId, completeClientAction } from '../../../codewhisperer/service/transformByQ/SEGApiHandler'
+import { ChildProcess } from '../../../shared/utilities/processUtils'
 
 // These events can be interactions within the chat,
 // or elsewhere in the IDE
@@ -84,6 +94,8 @@ export class GumbyController {
     private readonly messenger: Messenger
     private readonly sessionStorage: ChatSessionManager
     private authController: AuthController
+    private transformationDefinitionId: string | undefined
+    private chatHistory = new Set<string>()
 
     public constructor(
         private readonly chatControllerMessageListeners: ChatControllerEventEmitters,
@@ -197,7 +209,49 @@ export class GumbyController {
         }
 
         if (embeddedSQLProjects.length === 0) {
-            await this.handleLanguageUpgrade(message)
+            // await this.handleLanguageUpgrade(message)
+            // this.messenger.sendAnswer({
+            //     message: 'Starting a new agent...',
+            //     type: 'answer',
+            //     tabID: message.tabId,
+            // })
+            this.messenger.sendAsyncEventProgress(message.tabID, true, 'Starting a new agent...')
+            this.transformationDefinitionId = await startAgent()
+
+            const k = await listClientActions({
+                context: {
+                    transformationDefinitionId: 'test',
+                    executionId: 'test',
+                },
+                status: 'PENDING',
+            })
+
+            for (const kk of k) {
+                await this.handleClientAction(kk, message.tabID, this.transformationDefinitionId)
+            }
+
+            // this.messenger.sendAnswer({
+            //     message: agentResponse,
+            //     type: 'answer',
+            //     tabID: message.tabID,
+            // })
+            // this.messenger.sendAsyncEventProgress(
+            //     message.tabID,
+            //     true,
+            //     'A transformation builder has been kicked off! Builder ID: ' + this.transformationDefinitionId
+            // )
+            this.messenger.sendAsyncEventProgress(message.tabID, true, 'A transformation builder has been kicked off!')
+            this.messenger.sendAsyncEventProgress(message.tabID, false)
+            this.messenger.sendAnswer({
+                message: 'Builder ID: ' + this.transformationDefinitionId,
+                tabID: message.tabID,
+                type: 'answer',
+            })
+
+            await this.getAgentChatMessage({
+                transformationDefinitionId: this.transformationDefinitionId,
+                tabId: message.tabID,
+            })
             return
         }
 
@@ -264,7 +318,7 @@ export class GumbyController {
             this.messenger.sendTransformationIntroduction(message.tabID)
         })
     }
-
+    // @ts-ignore
     private async handleLanguageUpgrade(message: any) {
         await telemetry.codeTransform_submitSelection
             .run(async () => {
@@ -414,6 +468,9 @@ export class GumbyController {
             case ButtonActions.OPEN_BUILD_LOG:
                 await openBuildLogFile()
                 this.messenger.sendViewBuildLog(message.tabID)
+                break
+            case ButtonActions.UPLOAD_ZIP_FILE:
+                await this.zipDirectory(message.tabID)
                 break
         }
     }
@@ -658,47 +715,534 @@ export class GumbyController {
         this.messenger.sendHILResumeMessage(data.tabID)
     }
 
-    private async processHumanChatMessage(data: { message: string; tabID: string }) {
-        this.messenger.sendUserPrompt(data.message, data.tabID)
-        this.messenger.sendChatInputEnabled(data.tabID, false)
-        this.messenger.sendUpdatePlaceholder(data.tabID, 'Open a new tab to chat with Q')
+    private delay(ms: number): Promise<void> {
+        return new Promise((resolve) => setTimeout(resolve, ms))
+    }
 
-        const session = this.sessionStorage.getSession()
-        switch (session.conversationState) {
-            case ConversationState.PROMPT_JAVA_HOME: {
-                const pathToJavaHome = extractPath(data.message)
-                if (pathToJavaHome) {
-                    await this.prepareLanguageUpgradeProject({
-                        pathToJavaHome,
-                        tabID: data.tabID,
+    private async downloadAndExtractArtifact(artifactId: string): Promise<void> {
+        // Clear the code repository path
+        // if (await fs.exists(this.codeRepositoryPath)) {
+        //     fs.rmdirSync(this.codeRepositoryPath, { recursive: true })
+        // }
+        // fs.mkdirSync(this.codeRepositoryPath, { recursive: true })
+
+        const file = await donwloadByArtifactId(artifactId)
+
+        if (!file) {
+            return
+        }
+
+        // Convert ReadableStream to Buffer
+        const reader = file.getReader()
+        const chunks: Uint8Array[] = []
+
+        while (true) {
+            const { done, value } = await reader.read()
+            if (done) {
+                break
+            }
+            chunks.push(value)
+        }
+
+        // Concatenate chunks into a single buffer
+        const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0)
+        const buffer = Buffer.concat(chunks, totalLength)
+
+        const workspaceFolders = vscode.workspace.workspaceFolders
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            void vscode.window.showErrorMessage('No workspace folder is open. Please open a folder and try again.')
+            return
+        }
+
+        // Now use the buffer with admZip
+        const extractionPath = workspaceFolders[0].uri.fsPath
+        const extractZip = new admZip(buffer)
+        extractZip.extractAllTo(extractionPath, true)
+        void vscode.window.showInformationMessage(`Artifact ${artifactId} has been extracted to your workspace.`)
+    }
+
+    // private async executeCommand(command: string, tabId: string): Promise<{ exitCode: number; output: string }> {
+    //     return new Promise((resolve, reject) => {
+    //         let output = ''
+    //         const commandParts = command.split(' ')
+    //         const cmd = commandParts[0]
+    //         const args = commandParts.slice(1)
+
+    //         const process = spawn(cmd, args, {
+    //             // change to code repo
+    //             cwd: '',
+    //             shell: true,
+    //         })
+
+    //         process.stdout.on('data', (data) => {
+    //             const chunk = data.toString()
+    //             output += chunk
+
+    //             // Update the UI with the streaming output
+    //             this.messenger.sendAsyncEventProgress(
+    //                 tabId,
+    //                 true,
+    //                 `## Running command\n\`\`\`bash\n${command}\n\`\`\`\n\n## Output\n\`\`\`\n${output}\n\`\`\``
+    //             )
+    //         })
+
+    //         process.stderr.on('data', (data) => {
+    //             const chunk = data.toString()
+    //             output += chunk
+
+    //             // Update the UI with the streaming output
+    //             this.messenger.sendAsyncEventProgress(
+    //                 tabId,
+    //                 true,
+    //                 `## Running command\n\`\`\`bash\n${command}\n\`\`\`\n\n## Output\n\`\`\`\n${output}\n\`\`\``
+    //             )
+    //         })
+
+    //         process.on('close', (code) => {
+    //             // Clear the progress indicator
+    //             this.messenger.sendAsyncEventProgress(tabId, false)
+    //             resolve({ exitCode: code || 0, output })
+    //         })
+
+    //         process.on('error', (err) => {
+    //             reject(err)
+    //         })
+    //     })
+    // }
+
+    // Helper method to format command output consistently
+    private formatCommandOutput(
+        command: string,
+        stdout: string,
+        stderr: string,
+        workspacePath?: string,
+        exitCode?: number
+    ): string {
+        let output = `### Command: \`${command}\``
+
+        if (workspacePath && exitCode !== undefined) {
+            output += `\nWorking directory: \`${workspacePath}\``
+        }
+
+        output += '\n\n\n'
+        output += stdout || 'Command executed with no standard output.'
+        output += '\n'
+
+        if (stderr && stderr.trim() !== '') {
+            output += '\n\n**Errors/Warnings:**\n\n'
+            output += stderr
+            output += '\n'
+        }
+
+        if (exitCode !== undefined) {
+            output += `\n\nExit code: ${exitCode}`
+        }
+
+        return output
+    }
+
+    public async executeCommand(tabId: string, command: string): Promise<void> {
+        if (!command) {
+            return
+        }
+
+        this.messenger.sendAnswer({
+            message: `Running command: ${command}...`,
+            type: 'answer',
+            tabID: tabId,
+        })
+
+        try {
+            let workspacePath: string | undefined
+            if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+                workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath
+            }
+
+            // Split the command into executable and args
+            const parts = command.split(' ')
+            const executable = parts[0]
+            const args = parts.slice(1)
+
+            // Keep track of accumulated output
+            let stdoutAccumulated = ''
+            let stderrAccumulated = ''
+            let lastUpdateTime = 0
+            const updateThrottleMs = 100 // Only update UI every 100ms
+
+            // Set up options for command execution
+            const options = {
+                spawnOptions: {
+                    shell: true,
+                    cwd: workspacePath,
+                },
+                collect: true,
+                onStdout: (text: string) => {
+                    // Update the streaming answer with real-time output
+                    this.messenger.sendAnswer({
+                        message: `Running command: ${command}...\n\n\`\`\`\n${text}\n\`\`\``,
+                        type: 'answer-part',
+                        tabID: tabId,
                     })
-                } else {
-                    this.messenger.sendUnrecoverableErrorResponse('invalid-java-home', data.tabID)
-                }
+                },
+                onStderr: (text: string) => {
+                    // Accumulate stdout
+                    stdoutAccumulated = stdoutAccumulated + text
+
+                    // Throttle updates to avoid overwhelming the UI
+                    const now = Date.now()
+
+                    if (now - lastUpdateTime > updateThrottleMs) {
+                        lastUpdateTime = now
+
+                        // Update the streaming answer with accumulated output
+
+                        this.messenger.sendAnswer({
+                            message: `Running command: ${command}...\n\n\`\`\`\n${stdoutAccumulated}\n\`\`\``,
+                            type: 'answer-part',
+                            tabID: tabId,
+                        })
+                    }
+
+                    // Update with error output
+                    // this.messenger.sendAnswer({
+                    //     message: `Running command: ${command}...\n\n\`\`\`\n${text}\n\`\`\``,
+                    //     type: 'answer-stream',
+                    //     tabID: tabId,
+                    // })
+                },
+            }
+
+            // Run the command
+            const result = await ChildProcess.run(executable, args, options)
+
+            // Make sure we've captured all output
+            stdoutAccumulated = result.stdout || stdoutAccumulated
+            stderrAccumulated = result.stderr || stderrAccumulated
+
+            // Format the final output with exit code
+            const outputMessage = this.formatCommandOutput(
+                command,
+                stdoutAccumulated,
+                stderrAccumulated,
+                workspacePath,
+                result.exitCode
+            )
+
+            // Send the final result to the chat UI
+            this.messenger.sendAnswer({
+                message: outputMessage,
+                type: 'answer',
+                tabID: tabId,
+            })
+        } catch (error) {
+            // Handle errors
+            const errorMessage = error instanceof Error ? error.message : String(error)
+
+            this.messenger.sendAnswer({
+                message: `### Error executing command: \`${command}\`\n\n\`\`\`\n${errorMessage}\n\`\`\``,
+                type: 'answer',
+                tabID: tabId,
+            })
+        }
+    }
+
+    public async handleClientAction(action: any, tabId: string, transformationDefinitionId: string): Promise<void> {
+        const actionDetail = action.actionDetail
+        const actionId = actionDetail.actionId
+        const metadata = actionDetail.metadata
+        const commandActionMetadata = metadata.commandActionMetadata
+        const command = commandActionMetadata.command
+        const inputArtifactId = commandActionMetadata.inputArtifactId
+
+        try {
+            // Add a chat message showing the command we're going to run
+            this.messenger.sendAnswer({
+                type: 'answer',
+                tabID: tabId,
+                message: `## Running command\n\`\`\`bash\n${command}\n\`\`\``,
+            })
+
+            // Download the input artifact
+            await this.downloadAndExtractArtifact(inputArtifactId)
+
+            // Execute the command and capture output
+            await this.executeCommand(tabId, command)
+
+            // Upload the command output as an artifact
+            // const artifactId = await uploadZipFile(Buffer.from(output, 'utf8'))
+
+            // Complete the client action
+            // await completeClientAction({
+            //     context: {
+            //         transformationDefinitionId,
+            //     },
+            //     actionId,
+            //     actionResult: {
+            //         commandActionResult: {
+            //             exitCode: 0,
+            //             outputArtifacts: [
+            //                 {
+            //                     artifactType: 'LOGS',
+            //                     artifactId,
+            //                 },
+            //             ],
+            //         },
+            //     },
+            // })
+            // Show the command output in the chat
+        } catch (error) {
+            getLogger().error(`Error handling client action: ${error}`)
+            this.messenger.sendAnswer({
+                type: 'answer',
+                tabID: tabId,
+                message: `## Error handling client action\n\`\`\`\n${error}\n\`\`\``,
+            })
+        }
+    }
+
+    private async zipDirectory(tabId: string): Promise<void> {
+        const directoryUri = await vscode.window.showOpenDialog({
+            canSelectFiles: false,
+            canSelectFolders: true,
+            canSelectMany: false,
+            openLabel: 'Select Directory to Zip',
+        })
+
+        if (!directoryUri || directoryUri.length === 0) {
+            return // User cancelled
+        }
+        this.messenger.sendAsyncEventProgress(tabId, true, undefined)
+        this.messenger.sendAsyncEventProgress(tabId, true, `## Zipping Directory\n\nCreating zip file...`)
+        await this.delay(2000)
+        const directoryPath = directoryUri[0].fsPath
+
+        try {
+            // Create a new zip file
+            const zip = new admZip()
+
+            // Add the entire directory recursively
+            zip.addLocalFolder(directoryPath)
+
+            // Write the zip file
+            const zipBuffer = zip.toBuffer()
+
+            this.messenger.sendAsyncEventProgress(
+                tabId,
+                true,
+                `## Zipping Directory ${directoryPath}\n\n✅ Zipping complete!\n\nUploading to the Artifact store for the agent...`
+            )
+            await this.delay(2000)
+
+            const artifactId = await uploadZipFile(zipBuffer)
+
+            await sendMsgToAgent({
+                context: {
+                    transformationDefinitionId: this.transformationDefinitionId || '',
+                },
+                textContent: '',
+                sender: 'USER',
+                messageContext: {
+                    fileResponseContext: {
+                        artifactId,
+                    },
+                },
+            })
+
+            await this.delay(2000)
+            this.messenger.sendAsyncEventProgress(
+                tabId,
+                true,
+                `## Zipping Directory ${directoryPath}\n\n✅ Zipping complete!\n\n✅ Uploading complete!`
+            )
+            this.messenger.sendAsyncEventProgress(tabId, false)
+
+            await this.getAgentChatMessage({
+                transformationDefinitionId: this.transformationDefinitionId || '',
+                tabId,
+            })
+        } catch (error) {
+            // Clear any progress message that might be showing
+            this.messenger.sendAsyncEventProgress(tabId, false)
+
+            // Show error as a permanent message
+            this.messenger.sendAnswer({
+                message: `## Error Zipping Directory ${directoryPath}\n\n❌ Failed to zip directory: ${error}`,
+                type: 'answer',
+                tabID: tabId,
+            })
+
+            void vscode.window.showErrorMessage(`Failed to zip directory: ${error}`)
+        }
+    }
+
+    private formatCodeBlocks(text: string): string {
+        // Find potential JSON blocks (looking for balanced braces)
+        let result = text
+        let startIndex = 0
+
+        while (true) {
+            // Find the next opening brace
+            const openBraceIndex = result.indexOf('{', startIndex)
+            if (openBraceIndex === -1) {
                 break
             }
 
-            case ConversationState.WAITING_FOR_TRANSFORMATION_OBJECTIVE: {
-                const objective = data.message.trim().toLowerCase()
-                // since we're prompting the user, their project(s) must be eligible for both types of transformations, so track how often this happens here
-                if (objective === 'language upgrade' || objective === 'sql conversion') {
-                    telemetry.codeTransform_submitSelection.emit({
-                        codeTransformSessionId: CodeTransformTelemetryState.instance.getSessionId(),
-                        userChoice: objective,
-                        result: 'Succeeded',
-                    })
+            // Try to find the matching closing brace
+            let braceCount = 1
+            let closeBraceIndex = openBraceIndex + 1
+
+            while (braceCount > 0 && closeBraceIndex < result.length) {
+                if (result[closeBraceIndex] === '{') {
+                    braceCount++
                 }
-                if (objective === 'language upgrade') {
-                    await this.handleLanguageUpgrade(data)
-                } else if (objective === 'sql conversion') {
-                    await this.handleSQLConversion(data)
-                } else {
-                    // keep prompting user until they enter a valid option
-                    await this.transformInitiated(data)
+                if (result[closeBraceIndex] === '}') {
+                    braceCount--
                 }
-                break
+                closeBraceIndex++
+            }
+
+            if (braceCount === 0) {
+                // We found a potential JSON block
+                const jsonCandidate = result.substring(openBraceIndex, closeBraceIndex)
+
+                try {
+                    // Try to parse it as JSON
+                    const parsedJson = JSON.parse(jsonCandidate)
+                    const formattedJson = JSON.stringify(parsedJson, null, 2)
+
+                    // Replace the original JSON with the formatted version in a code block
+                    result =
+                        result.substring(0, openBraceIndex) +
+                        `\n\n\`\`\`json\n${formattedJson}\n\`\`\`\n\n` +
+                        result.substring(closeBraceIndex)
+
+                    // Update the start index for the next iteration
+                    startIndex = openBraceIndex + formattedJson.length + 20 // 20 accounts for the markdown syntax
+                } catch (e) {
+                    // Not valid JSON, move on
+                    startIndex = openBraceIndex + 1
+                }
+            } else {
+                // No matching closing brace found, move on
+                startIndex = openBraceIndex + 1
             }
         }
+
+        return result
+    }
+
+    private async getAgentChatMessage({
+        transformationDefinitionId,
+        tabId,
+    }: {
+        transformationDefinitionId: string
+        tabId: string
+    }) {
+        // this.messenger.sendAsyncEventProgress(
+        //     tabId,
+        //     true,
+        //     'Agent is thinking...',
+        //     GumbyNamedMessages.ZIP_FILE_UP_LOAD_PROGRESS
+        // )
+        this.messenger.sendAsyncEventProgress(tabId, true, undefined)
+
+        const msg = await listMsgFromAgent({
+            context: {
+                transformationDefinitionId,
+            },
+            startTime: new Date(new Date().setDate(new Date().getDate() - 2)),
+            sender: 'SYSTEM',
+        })
+        await this.delay(1000)
+
+        for (const msgText of msg.messages || []) {
+            if (this.chatHistory.has(msgText.messageId)) {
+                continue
+            }
+            // add msg into the history
+            this.chatHistory.add(msgText.messageId)
+
+            if (msgText.messageContext) {
+                if (msgText.messageContext.fileRequestContext?.requestedFileType === 'ZIP') {
+                    this.messenger.sendZipFileUploadMessage(tabId, msgText.content)
+                }
+                return
+            }
+
+            // Regular msg
+            this.messenger.sendAnswer({
+                message: this.formatCodeBlocks(msgText.content),
+                type: 'answer',
+                tabID: tabId,
+            })
+        }
+    }
+
+    private async processHumanChatMessage(data: { message: string; tabID: string }) {
+        this.messenger.sendUserPrompt(data.message, data.tabID)
+        // this.messenger.sendChatInputEnabled(data.tabID, false)
+        // this.messenger.sendAsyncEventProgress(data.tabID, true, 'Agent is thinking...')
+        await sendMsgToAgent({
+            context: {
+                transformationDefinitionId: this.transformationDefinitionId || '',
+            },
+            textContent: data.message,
+            sender: 'USER',
+        })
+        // this.messenger.sendAnswer({
+        //     message: response.messages.map((msg) => msg.content).join('/n'),
+        //     type: 'ai-prompt',
+        //     tabID: data.tabID,
+        // })
+        // this.messenger.sendChatInputEnbbabled(data.tabID, true)
+
+        this.messenger.sendAsyncEventProgress(data.tabID, false)
+
+        await this.getAgentChatMessage({
+            transformationDefinitionId: this.transformationDefinitionId || '',
+            tabId: data.tabID,
+        })
+
+        // Start polling for client actions after sending a message
+        if (this.clientActionPoller) {
+            this.clientActionPoller.startPolling()
+        }
+        // const session = this.sessionStorage.getSession()
+        // switch (session.conversationState) {
+        //     case ConversationState.PROMPT_JAVA_HOME: {
+        //         const pathToJavaHome = extractPath(data.message)
+        //         if (pathToJavaHome) {
+        //             await this.prepareLanguageUpgradeProject({
+        //                 pathToJavaHome,
+        //                 tabID: data.tabID,
+        //             })
+        //         } else {
+        //             this.messenger.sendUnrecoverableErrorResponse('invalid-java-home', data.tabID)
+        //         }
+        //         break
+        //     }
+
+        //     case ConversationState.WAITING_FOR_TRANSFORMATION_OBJECTIVE: {
+        //         const objective = data.message.trim().toLowerCase()
+        //         // since we're prompting the user, their project(s) must be eligible for both types of transformations, so track how often this happens here
+        //         if (objective === 'language upgrade' || objective === 'sql conversion') {
+        //             telemetry.codeTransform_submitSelection.emit({
+        //                 codeTransformSessionId: CodeTransformTelemetryState.instance.getSessionId(),
+        //                 userChoice: objective,
+        //                 result: 'Succeeded',
+        //             })
+        //         }
+        //         if (objective === 'language upgrade') {
+        //             await this.handleLanguageUpgrade(data)
+        //         } else if (objective === 'sql conversion') {
+        //             await this.handleSQLConversion(data)
+        //         } else {
+        //             // keep prompting user until they enter a valid option
+        //             await this.transformInitiated(data)
+        //         }
+        //         break
+        //     }
+        // }
     }
 
     private async continueJobWithSelectedDependency(message: { tabID: string; formSelectedValues: any }) {
@@ -765,6 +1309,7 @@ export class GumbyController {
  * @param text
  * @returns the absolute path if path points to existing folder, otherwise undefined
  */
+// @ts-ignore
 function extractPath(text: string): string | undefined {
     const resolvedPath = path.resolve(text.trim())
     return nodefs.existsSync(resolvedPath) ? resolvedPath : undefined

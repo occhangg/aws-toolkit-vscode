@@ -24,6 +24,7 @@ import { Connector as GumbyChatConnector } from './apps/gumbyChatConnector'
 import { Connector as ScanChatConnector } from './apps/scanChatConnector'
 import { Connector as TestChatConnector } from './apps/testChatConnector'
 import { Connector as docChatConnector } from './apps/docChatConnector'
+import { Connector as SegChatConnector } from './apps/segChatConnector'
 import { ExtensionMessage } from './commands'
 import { TabType, TabsStorage } from './storages/tabsStorage'
 import { WelcomeFollowupType } from './apps/amazonqCommonsConnector'
@@ -115,6 +116,7 @@ export class Connector {
     private readonly cwChatConnector
     private readonly featureDevChatConnector
     private readonly gumbyChatConnector
+    private readonly segChatConnector
     private readonly scanChatConnector
     private readonly testChatConnector
     private readonly docChatConnector
@@ -130,6 +132,7 @@ export class Connector {
         this.featureDevChatConnector = new FeatureDevChatConnector(props)
         this.docChatConnector = new docChatConnector(props)
         this.gumbyChatConnector = new GumbyChatConnector(props)
+        this.segChatConnector = new SegChatConnector(props)
         this.scanChatConnector = new ScanChatConnector(props)
         this.testChatConnector = new TestChatConnector(props)
         this.amazonqCommonsConnector = new AmazonQCommonsConnector({
@@ -243,6 +246,10 @@ export class Connector {
 
     transform = (tabID: string): void => {
         this.gumbyChatConnector.transform(tabID)
+    }
+
+    seg = (tabID: string): void => {
+        this.segChatConnector.seg(tabID)
     }
 
     scans = (tabID: string): void => {

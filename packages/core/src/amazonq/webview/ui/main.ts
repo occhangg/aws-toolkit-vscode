@@ -237,7 +237,7 @@ export const createMynahUI = (
                 }
             }
         },
-        onFileActionClick: (tabID: string, messageId: string, filePath: string, actionName: string): void => {},
+        onFileActionClick: (tabID: string, messageId: string, filePath: string, actionName: string): void => { },
         onQuickHandlerCommand: (tabID: string, command?: string, eventId?: string) => {
             tabsStorage.updateTabLastCommand(tabID, command)
             if (command === 'aws.awsq.transform') {
@@ -917,7 +917,7 @@ export const createMynahUI = (
             mouseEvent?.stopImmediatePropagation()
             connector.onInfoLinkClick(tabId, link)
         },
-        onResetStore: () => {},
+        onResetStore: () => { },
         onFollowUpClicked: (tabID, messageId, followUp) => {
             followUpsInteractionHandler.onFollowUpClicked(tabID, messageId, followUp)
         },

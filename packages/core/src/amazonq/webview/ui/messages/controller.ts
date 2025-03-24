@@ -46,7 +46,7 @@ export class MessageController {
         if (
             selectedTab?.id === undefined ||
             selectedTab?.type === undefined ||
-            ['featuredev', 'gumby', 'review', 'testgen', 'doc'].includes(selectedTab.type)
+            ['featuredev', 'gumby', 'review', 'testgen', 'doc', 'seg'].includes(selectedTab.type)
         ) {
             // Create a new tab if there's none
             const newTabID: string | undefined = this.mynahUI.updateStore(

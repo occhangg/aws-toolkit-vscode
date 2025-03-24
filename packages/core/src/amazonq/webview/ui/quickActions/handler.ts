@@ -82,6 +82,9 @@ export class QuickActionHandler {
             case '/transform':
                 this.handleGumbyCommand(tabID, eventId)
                 break
+            case '/seg':
+                this.handleSegCommand(tabID, eventId)
+                break
             case '/review':
                 this.handleScanCommand(tabID, eventId)
                 break
@@ -100,6 +103,59 @@ export class QuickActionHandler {
             case '/clear':
                 this.handleClearCommand(tabID)
                 break
+        }
+    }
+    private handleSegCommand(tabID: string, eventId: string | undefined) {
+        let segTabId: string | undefined = undefined
+
+        for (const tab of this.tabsStorage.getTabs()) {
+            if (tab.type === 'seg') {
+                segTabId = tab.id
+            }
+        }
+
+        if (segTabId !== undefined) {
+            this.mynahUI.selectTab(segTabId, eventId || '')
+            this.connector.onTabChange(segTabId)
+            this.connector.seg(segTabId)
+            return
+        }
+
+        let affectedTabId: string | undefined = tabID
+        // if there is no seg tab, open a new one
+        const currentTabType = this.tabsStorage.getTab(affectedTabId)?.type
+        if (currentTabType !== 'unknown' && currentTabType !== 'welcome') {
+            affectedTabId = this.mynahUI.updateStore('', {
+                loadingChat: true,
+                cancelButtonWhenLoading: false,
+            })
+        }
+
+        if (affectedTabId === undefined) {
+            this.mynahUI.notify({
+                content: uiComponentsTexts.noMoreTabsTooltip,
+                type: NotificationType.WARNING,
+            })
+            return
+        } else {
+            this.tabsStorage.updateTabTypeFromUnknown(affectedTabId, 'seg')
+            this.connector.onKnownTabOpen(affectedTabId)
+            this.connector.onUpdateTabType(affectedTabId)
+
+            // reset chat history
+            this.mynahUI.updateStore(affectedTabId, {
+                chatItems: [],
+            })
+
+            this.mynahUI.updateStore(affectedTabId, this.tabDataGenerator.getTabData('seg', true, undefined))
+
+            // disable chat prompt
+            this.mynahUI.updateStore(affectedTabId, {
+                loadingChat: true,
+                cancelButtonWhenLoading: false,
+            })
+
+            this.connector.seg(affectedTabId)
         }
     }
 
@@ -309,7 +365,6 @@ export class QuickActionHandler {
         const currentTabType = this.tabsStorage.getTab(affectedTabId)?.type
         if (currentTabType !== 'unknown' && currentTabType !== 'welcome') {
             affectedTabId = this.mynahUI.updateStore('', {
-                loadingChat: true,
                 cancelButtonWhenLoading: false,
             })
         }
@@ -333,10 +388,10 @@ export class QuickActionHandler {
             this.mynahUI.updateStore(affectedTabId, this.tabDataGenerator.getTabData('gumby', true, undefined))
 
             // disable chat prompt
-            this.mynahUI.updateStore(affectedTabId, {
-                loadingChat: true,
-                cancelButtonWhenLoading: false,
-            })
+            // this.mynahUI.updateStore(affectedTabId, {
+            //     loadingChat: true,
+            //     cancelButtonWhenLoading: false,
+            // })
 
             this.connector.transform(affectedTabId)
         }

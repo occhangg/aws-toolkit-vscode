@@ -46,51 +46,57 @@ export class QuickActionGenerator {
                 commands: [
                     ...(this.isFeatureDevEnabled && !this.disabledCommands.includes('/dev')
                         ? [
-                              {
-                                  command: '/dev',
-                                  icon: MynahIcons.CODE_BLOCK,
-                                  placeholder: 'Describe your task or issue in as much detail as possible',
-                                  description: 'Generate code to make a change in your project',
-                              },
-                          ]
+                            {
+                                command: '/dev',
+                                icon: MynahIcons.CODE_BLOCK,
+                                placeholder: 'Describe your task or issue in as much detail as possible',
+                                description: 'Generate code to make a change in your project',
+                            },
+                        ]
                         : []),
                     ...(this.isTestEnabled && !this.disabledCommands.includes('/test')
                         ? [
-                              {
-                                  command: '/test',
-                                  icon: MynahIcons.CHECK_LIST,
-                                  placeholder: 'Specify a function(s) in the current file (optional)',
-                                  description: 'Generate unit tests (python & java) for selected code',
-                              },
-                          ]
+                            {
+                                command: '/test',
+                                icon: MynahIcons.CHECK_LIST,
+                                placeholder: 'Specify a function(s) in the current file (optional)',
+                                description: 'Generate unit tests (python & java) for selected code',
+                            },
+                        ]
                         : []),
                     ...(this.isScanEnabled && !this.disabledCommands.includes('/review')
                         ? [
-                              {
-                                  command: '/review',
-                                  icon: MynahIcons.BUG,
-                                  description: 'Identify and fix code issues before committing',
-                              },
-                          ]
+                            {
+                                command: '/review',
+                                icon: MynahIcons.BUG,
+                                description: 'Identify and fix code issues before committing',
+                            },
+                        ]
                         : []),
                     ...(this.isDocEnabled && !this.disabledCommands.includes('/doc')
                         ? [
-                              {
-                                  command: '/doc',
-                                  icon: MynahIcons.FILE,
-                                  description: 'Generate documentation',
-                              },
-                          ]
+                            {
+                                command: '/doc',
+                                icon: MynahIcons.FILE,
+                                description: 'Generate documentation',
+                            },
+                        ]
                         : []),
                     ...(this.isGumbyEnabled && !this.disabledCommands.includes('/transform')
                         ? [
-                              {
-                                  command: '/transform',
-                                  description: 'Transform your Java project',
-                                  icon: MynahIcons.TRANSFORM,
-                              },
-                          ]
+                            {
+                                command: '/transform',
+                                description: 'Transform your Java project',
+                                icon: MynahIcons.TRANSFORM,
+                            },
+                        ]
                         : []),
+
+                    {
+                        command: '/seg',
+                        description: 'SEG your project',
+                        icon: MynahIcons.TRANSFORM,
+                    },
                 ],
             },
             {
@@ -144,6 +150,10 @@ export class QuickActionGenerator {
             welcome: {
                 description: '',
                 unavailableItems: ['/clear'],
+            },
+            seg: {
+                description: "This command isn't available in /seg",
+                unavailableItems: ['/dev', '/test', '/doc', '/review', '/help', '/clear'],
             },
             unknown: {
                 description: '',

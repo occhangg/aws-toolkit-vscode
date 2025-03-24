@@ -58,10 +58,11 @@ export enum GumbyNamedMessages {
     JOB_SUBMISSION_STATUS_MESSAGE = 'gumbyJobSubmissionMessage',
     JOB_SUBMISSION_WITH_DEPENDENCY_STATUS_MESSAGE = 'gumbyJobSubmissionWithDependencyMessage',
     JOB_FAILED_IN_PRE_BUILD = 'gumbyJobFailedInPreBuildMessage',
+    ZIP_FILE_UP_LOAD_PROGRESS = 'gumbyZipFileUpLoadProgressMessage',
 }
 
 export class Messenger {
-    public constructor(private readonly dispatcher: AppToWebViewMessageDispatcher) {}
+    public constructor(private readonly dispatcher: AppToWebViewMessageDispatcher) { }
 
     public sendAnswer(params: { message?: string; type: ChatItemType; tabID: string; messageID?: string }) {
         this.dispatcher.sendChatMessage(
@@ -786,6 +787,27 @@ ${codeSnippet}
             keepCardAfterClick: false,
             text: 'Cancel',
             id: ButtonActions.CANCEL_TRANSFORMATION_FORM,
+        })
+
+        this.dispatcher.sendChatMessage(
+            new ChatMessage(
+                {
+                    message,
+                    messageType: 'ai-prompt',
+                    buttons,
+                },
+                tabID
+            )
+        )
+    }
+
+    public sendZipFileUploadMessage(tabID: string, message: string) {
+        const buttons: ChatItemButton[] = []
+
+        buttons.push({
+            keepCardAfterClick: true,
+            text: 'Open file uploader',
+            id: ButtonActions.UPLOAD_ZIP_FILE,
         })
 
         this.dispatcher.sendChatMessage(

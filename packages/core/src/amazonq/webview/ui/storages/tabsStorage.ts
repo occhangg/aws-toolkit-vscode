@@ -14,6 +14,7 @@ const TabTypes = [
     'agentWalkthrough',
     'welcome',
     'unknown',
+    'seg',
 ] as const
 export type TabType = (typeof TabTypes)[number]
 export function isTabType(value: string): value is TabType {
@@ -32,6 +33,8 @@ export function getTabCommandFromTabType(tabType: TabType): string {
             return '/review'
         case 'testgen':
             return '/test'
+        case 'seg':
+            return '/seg'
         default:
             return ''
     }

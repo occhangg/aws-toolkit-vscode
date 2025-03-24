@@ -72,6 +72,7 @@ function registerApps(appInitContext: amazonq.AmazonQAppInitContext, context: Ex
     amazonq.testChatAppInit(appInitContext)
     scanChatAppInit(appInitContext)
     amazonq.docChatAppInit(appInitContext)
+    amazonq.segAppInit(appInitContext)
     inlineChatInit(context)
 }
 

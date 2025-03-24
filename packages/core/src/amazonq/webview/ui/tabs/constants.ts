@@ -52,6 +52,11 @@ To learn more, visit the [User Guide](${userGuideURL}).`,
         placeholder: 'Open a new tab to chat with Q',
         welcome: 'Welcome to Code Transformation!',
     },
+    seg: {
+        title: 'Q - SEG',
+        placeholder: 'Open a new tab to chat with Q',
+        welcome: 'Welcome to SEG!',
+    },
     review: {
         title: 'Q - Review',
         placeholder: `Ask a question or enter "/" for quick actions`,

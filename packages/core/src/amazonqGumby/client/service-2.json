@@ -1,0 +1,1207 @@
+{
+  "version": "2.0",
+  "metadata": {
+    "apiVersion": "2018-05-10",
+    "auth": [
+      "aws.auth#sigv4"
+    ],
+    "endpointPrefix": "segstapi",
+    "protocol": "rest-json",
+    "protocols": [
+      "rest-json"
+    ],
+    "serviceFullName": "A beautiful and amazing SEGSTAPI",
+    "serviceId": "segst",
+    "signatureVersion": "v4",
+    "signingName": "execute-api",
+    "uid": "segst-2018-05-10"
+  },
+  "operations": {
+    "BatchGetMessages": {
+      "name": "BatchGetMessages",
+      "http": {
+        "method": "POST",
+        "requestUri": "/chat/get",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "BatchGetMessagesInput"
+      },
+      "output": {
+        "shape": "BatchGetMessagesOutput"
+      }
+    },
+    "CompleteClientAction": {
+      "name": "CompleteClientAction",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/clientAction/complete",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "CompleteClientActionInput"
+      },
+      "output": {
+        "shape": "CompleteClientActionOutput"
+      }
+    },
+    "CreateDownloadUrl": {
+      "name": "CreateDownloadUrl",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/download",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "CreateDownloadUrlInput"
+      },
+      "output": {
+        "shape": "CreateDownloadUrlOutput"
+      }
+    },
+    "CreateUploadUrl": {
+      "name": "CreateUploadUrl",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/upload",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "CreateUploadUrlInput"
+      },
+      "output": {
+        "shape": "CreateUploadUrlOutput"
+      }
+    },
+    "Echo": {
+      "name": "Echo",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/echo",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "EchoInput"
+      },
+      "output": {
+        "shape": "EchoOutput"
+      },
+      "errors": [
+        {
+          "shape": "InvalidInputException"
+        }
+      ]
+    },
+    "GetClientAction": {
+      "name": "GetClientAction",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/clientAction/get",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "GetClientActionInput"
+      },
+      "output": {
+        "shape": "GetClientActionOutput"
+      }
+    },
+    "GetTransformBuilder": {
+      "name": "GetTransformBuilder",
+      "http": {
+        "method": "GET",
+        "requestUri": "/segst/transform/builder/definitions/{definitionId}",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "GetTransformBuilderInput"
+      },
+      "output": {
+        "shape": "GetTransformBuilderOutput"
+      }
+    },
+    "GetTransformDefinition": {
+      "name": "GetTransformDefinition",
+      "http": {
+        "method": "GET",
+        "requestUri": "/segst/transform/definitions/{definitionId}",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "GetTransformDefinitionInput"
+      },
+      "output": {
+        "shape": "GetTransformDefinitionOutput"
+      }
+    },
+    "GetTransformExec": {
+      "name": "GetTransformExec",
+      "http": {
+        "method": "GET",
+        "requestUri": "/segst/transform/definitions/{definitionId}/exec/{execId}",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "GetTransformExecInput"
+      },
+      "output": {
+        "shape": "GetTransformExecOutput"
+      }
+    },
+    "ListClientActions": {
+      "name": "ListClientActions",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/clientAction/list",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "ListClientActionsInput"
+      },
+      "output": {
+        "shape": "ListClientActionsOutput"
+      }
+    },
+    "ListMessages": {
+      "name": "ListMessages",
+      "http": {
+        "method": "POST",
+        "requestUri": "/chat/list",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "ListMessagesInput"
+      },
+      "output": {
+        "shape": "ListMessagesOutput"
+      }
+    },
+    "ListTransformDefinitions": {
+      "name": "ListTransformDefinitions",
+      "http": {
+        "method": "GET",
+        "requestUri": "/segst/transform/definitions",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "ListTransformDefinitionsInput"
+      },
+      "output": {
+        "shape": "ListTransformDefinitionsOutput"
+      }
+    },
+    "SendMessage": {
+      "name": "SendMessage",
+      "http": {
+        "method": "POST",
+        "requestUri": "/chat/send",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "SendMessageInput"
+      },
+      "output": {
+        "shape": "SendMessageOutput"
+      }
+    },
+    "StartTransformBuilder": {
+      "name": "StartTransformBuilder",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/transform/builder",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "StartTransformBuilderInput"
+      },
+      "output": {
+        "shape": "StartTransformBuilderOutput"
+      }
+    },
+    "StartTransformExec": {
+      "name": "StartTransformExec",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/transform/exec",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "StartTransformExecInput"
+      },
+      "output": {
+        "shape": "StartTransformExecOutput"
+      }
+    },
+    "StopTransformBuilder": {
+      "name": "StopTransformBuilder",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/transform/stop/definitions/{definitionId}",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "StopTransformBuilderInput"
+      },
+      "output": {
+        "shape": "StopTransformBuilderOutput"
+      }
+    },
+    "StopTransformExec": {
+      "name": "StopTransformExec",
+      "http": {
+        "method": "POST",
+        "requestUri": "/segst/transform/stop/definitions/{definitionId}/exec/{execId}",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "StopTransformExecInput"
+      },
+      "output": {
+        "shape": "StopTransformExecOutput"
+      }
+    },
+    "UpdateTransformBuilder": {
+      "name": "UpdateTransformBuilder",
+      "http": {
+        "method": "PUT",
+        "requestUri": "/segst/transform/definitions/{definitionId}",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "UpdateTransformBuilderInput"
+      },
+      "output": {
+        "shape": "UpdateTransformBuilderOutput"
+      }
+    },
+    "UpdateTransformExec": {
+      "name": "UpdateTransformExec",
+      "http": {
+        "method": "PUT",
+        "requestUri": "/segst/transform/definitions/{definitionId}/exec/{execId}",
+        "responseCode": 200
+      },
+      "input": {
+        "shape": "UpdateTransformExecInput"
+      },
+      "output": {
+        "shape": "UpdateTransformExecOutput"
+      }
+    }
+  },
+  "shapes": {
+    "ActionMetadata": {
+      "type": "structure",
+      "members": {
+        "commandActionMetadata": {
+          "shape": "CommandActionMetadata"
+        }
+      },
+      "union": true
+    },
+    "ActionResult": {
+      "type": "structure",
+      "members": {
+        "commandActionResult": {
+          "shape": "CommandActionResult"
+        }
+      },
+      "union": true
+    },
+    "ActionStatus": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "COMPLETE"
+      ]
+    },
+    "BatchGetMessagesInput": {
+      "type": "structure",
+      "required": [
+        "context",
+        "messageIds"
+      ],
+      "members": {
+        "context": {
+          "shape": "ExecutionContext"
+        },
+        "messageIds": {
+          "shape": "MessageIds"
+        }
+      }
+    },
+    "BatchGetMessagesOutput": {
+      "type": "structure",
+      "members": {
+        "messages": {
+          "shape": "Messages"
+        }
+      }
+    },
+    "ClientActionDetail": {
+      "type": "structure",
+      "members": {
+        "actionId": {
+          "shape": "Uuid"
+        },
+        "status": {
+          "shape": "ActionStatus"
+        },
+        "context": {
+          "shape": "ExecutionContext"
+        },
+        "metadata": {
+          "shape": "ActionMetadata"
+        },
+        "createdAt": {
+          "shape": "Timestamp"
+        }
+      }
+    },
+    "ClientActionSummaries": {
+      "type": "list",
+      "member": {
+        "shape": "ClientActionSummary"
+      }
+    },
+    "ClientActionSummary": {
+      "type": "structure",
+      "required": [
+        "actionId",
+        "status",
+        "createdAt"
+      ],
+      "members": {
+        "actionId": {
+          "shape": "Uuid"
+        },
+        "status": {
+          "shape": "ActionStatus"
+        },
+        "createdAt": {
+          "shape": "Timestamp"
+        }
+      }
+    },
+    "CommandActionMetadata": {
+      "type": "structure",
+      "required": [
+        "command",
+        "inputArtifactId"
+      ],
+      "members": {
+        "command": {
+          "shape": "String"
+        },
+        "inputArtifactId": {
+          "shape": "Uuid"
+        },
+        "outputArtifactTypes": {
+          "shape": "OutputArtifactTypes"
+        }
+      }
+    },
+    "CommandActionResult": {
+      "type": "structure",
+      "members": {
+        "exitCode": {
+          "shape": "Integer"
+        },
+        "outputArtifacts": {
+          "shape": "OutputArtifacts"
+        }
+      }
+    },
+    "CompleteClientActionInput": {
+      "type": "structure",
+      "required": [
+        "context",
+        "actionId",
+        "actionResult"
+      ],
+      "members": {
+        "context": {
+          "shape": "ExecutionContext"
+        },
+        "actionId": {
+          "shape": "Uuid"
+        },
+        "actionResult": {
+          "shape": "ActionResult"
+        }
+      }
+    },
+    "CompleteClientActionOutput": {
+      "type": "structure",
+      "members": {}
+    },
+    "ContentType": {
+      "type": "string",
+      "enum": [
+        "ZIP",
+        "PDF",
+        "JSON",
+        "PLAINTEXT"
+      ]
+    },
+    "CreateDownloadUrlInput": {
+      "type": "structure",
+      "required": [
+        "artifactId"
+      ],
+      "members": {
+        "artifactId": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "CreateDownloadUrlOutput": {
+      "type": "structure",
+      "members": {
+        "url": {
+          "shape": "String"
+        },
+        "headers": {
+          "shape": "RequestHeaderMap"
+        },
+        "contentType": {
+          "shape": "ContentType"
+        }
+      }
+    },
+    "CreateUploadUrlInput": {
+      "type": "structure",
+      "required": [
+        "sha256Checksum",
+        "contentType"
+      ],
+      "members": {
+        "sha256Checksum": {
+          "shape": "Sha256Checksum"
+        },
+        "contentType": {
+          "shape": "ContentType"
+        }
+      }
+    },
+    "CreateUploadUrlOutput": {
+      "type": "structure",
+      "members": {
+        "artifactId": {
+          "shape": "Uuid"
+        },
+        "url": {
+          "shape": "String"
+        },
+        "headers": {
+          "shape": "RequestHeaderMap"
+        }
+      }
+    },
+    "EchoInput": {
+      "type": "structure",
+      "members": {
+        "string": {
+          "shape": "String"
+        }
+      }
+    },
+    "EchoOutput": {
+      "type": "structure",
+      "members": {
+        "string": {
+          "shape": "String"
+        }
+      }
+    },
+    "ExecutionContext": {
+      "type": "structure",
+      "required": [
+        "transformationDefinitionId"
+      ],
+      "members": {
+        "transformationDefinitionId": {
+          "shape": "String"
+        },
+        "executionId": {
+          "shape": "String"
+        }
+      }
+    },
+    "FeedbackRequestContext": {
+      "type": "structure",
+      "required": [
+        "artifactId"
+      ],
+      "members": {
+        "artifactId": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "FileRequestContext": {
+      "type": "structure",
+      "required": [
+        "requestedFileType"
+      ],
+      "members": {
+        "requestedFileType": {
+          "shape": "FileType"
+        }
+      }
+    },
+    "FileResponseContext": {
+      "type": "structure",
+      "required": [
+        "artifactId"
+      ],
+      "members": {
+        "artifactId": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "FileType": {
+      "type": "string",
+      "enum": [
+        "ZIP",
+        "PDF",
+        "JSON",
+        "PLAINTEXT"
+      ]
+    },
+    "GetClientActionInput": {
+      "type": "structure",
+      "required": [
+        "context",
+        "actionId"
+      ],
+      "members": {
+        "context": {
+          "shape": "ExecutionContext"
+        },
+        "actionId": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "GetClientActionOutput": {
+      "type": "structure",
+      "required": [
+        "actionDetail"
+      ],
+      "members": {
+        "actionDetail": {
+          "shape": "ClientActionDetail"
+        }
+      }
+    },
+    "GetTransformBuilderInput": {
+      "type": "structure",
+      "required": [
+        "definitionId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "definitionId"
+        }
+      }
+    },
+    "GetTransformBuilderOutput": {
+      "type": "structure",
+      "required": [
+        "metadata"
+      ],
+      "members": {
+        "metadata": {
+          "shape": "TransformBuilderMetadata"
+        }
+      }
+    },
+    "GetTransformDefinitionInput": {
+      "type": "structure",
+      "required": [
+        "definitionId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "definitionId"
+        }
+      }
+    },
+    "GetTransformDefinitionOutput": {
+      "type": "structure",
+      "required": [
+        "metadata"
+      ],
+      "members": {
+        "metadata": {
+          "shape": "TransformDefinition"
+        }
+      }
+    },
+    "GetTransformExecInput": {
+      "type": "structure",
+      "required": [
+        "definitionId",
+        "execId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "definitionId"
+        },
+        "execId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "execId"
+        }
+      }
+    },
+    "GetTransformExecOutput": {
+      "type": "structure",
+      "required": [
+        "metadata"
+      ],
+      "members": {
+        "metadata": {
+          "shape": "TransformExecMetadata"
+        }
+      }
+    },
+    "HeaderKey": {
+      "type": "string"
+    },
+    "HeaderValueList": {
+      "type": "list",
+      "member": {
+        "shape": "String"
+      }
+    },
+    "Integer": {
+      "type": "integer",
+      "box": true
+    },
+    "InvalidInputException": {
+      "type": "structure",
+      "members": {
+        "message": {
+          "shape": "String"
+        }
+      },
+      "exception": true
+    },
+    "ListClientActionsInput": {
+      "type": "structure",
+      "required": [
+        "context"
+      ],
+      "members": {
+        "context": {
+          "shape": "ExecutionContext"
+        },
+        "status": {
+          "shape": "ActionStatus"
+        },
+        "nextToken": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "ListClientActionsOutput": {
+      "type": "structure",
+      "required": [
+        "actions"
+      ],
+      "members": {
+        "actions": {
+          "shape": "ClientActionSummaries"
+        },
+        "nextToken": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "ListMessagesInput": {
+      "type": "structure",
+      "required": [
+        "context",
+        "startTime",
+        "sender"
+      ],
+      "members": {
+        "context": {
+          "shape": "ExecutionContext"
+        },
+        "startTime": {
+          "shape": "Timestamp"
+        },
+        "sender": {
+          "shape": "Sender"
+        },
+        "nextToken": {
+          "shape": "String"
+        }
+      }
+    },
+    "ListMessagesOutput": {
+      "type": "structure",
+      "members": {
+        "messageIds": {
+          "shape": "MessageIds"
+        },
+        "nextToken": {
+          "shape": "String"
+        }
+      }
+    },
+    "ListTransformDefinitionsInput": {
+      "type": "structure",
+      "members": {
+        "maxResults": {
+          "shape": "Integer",
+          "location": "querystring",
+          "locationName": "maxResults"
+        },
+        "nextToken": {
+          "shape": "String",
+          "location": "querystring",
+          "locationName": "nextToken"
+        },
+        "status": {
+          "shape": "TransformBuilderStatus",
+          "location": "querystring",
+          "locationName": "status"
+        }
+      }
+    },
+    "ListTransformDefinitionsOutput": {
+      "type": "structure",
+      "members": {
+        "definitions": {
+          "shape": "TransformDefinitions"
+        },
+        "nextToken": {
+          "shape": "String"
+        }
+      }
+    },
+    "Message": {
+      "type": "structure",
+      "required": [
+        "messageId",
+        "sender",
+        "content",
+        "timestamp"
+      ],
+      "members": {
+        "messageId": {
+          "shape": "Uuid"
+        },
+        "sender": {
+          "shape": "Sender"
+        },
+        "content": {
+          "shape": "String"
+        },
+        "timestamp": {
+          "shape": "Timestamp"
+        },
+        "messageContext": {
+          "shape": "MessageContext"
+        }
+      }
+    },
+    "MessageContext": {
+      "type": "structure",
+      "members": {
+        "fileRequestContext": {
+          "shape": "FileRequestContext"
+        },
+        "fileResponseContext": {
+          "shape": "FileResponseContext"
+        },
+        "feedbackRequestContext": {
+          "shape": "FeedbackRequestContext"
+        }
+      },
+      "union": true
+    },
+    "MessageIds": {
+      "type": "list",
+      "member": {
+        "shape": "Uuid"
+      }
+    },
+    "Messages": {
+      "type": "list",
+      "member": {
+        "shape": "Message"
+      }
+    },
+    "OutputArtifact": {
+      "type": "structure",
+      "members": {
+        "artifactType": {
+          "shape": "OutputArtifactType"
+        },
+        "artifactId": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "OutputArtifactType": {
+      "type": "string",
+      "enum": [
+        "LOGS"
+      ]
+    },
+    "OutputArtifactTypes": {
+      "type": "list",
+      "member": {
+        "shape": "OutputArtifactType"
+      }
+    },
+    "OutputArtifacts": {
+      "type": "list",
+      "member": {
+        "shape": "OutputArtifact"
+      }
+    },
+    "RequestHeaderMap": {
+      "type": "map",
+      "key": {
+        "shape": "HeaderKey"
+      },
+      "value": {
+        "shape": "HeaderValueList"
+      }
+    },
+    "SendMessageInput": {
+      "type": "structure",
+      "required": [
+        "context",
+        "textContent",
+        "sender"
+      ],
+      "members": {
+        "context": {
+          "shape": "ExecutionContext"
+        },
+        "textContent": {
+          "shape": "String"
+        },
+        "sender": {
+          "shape": "Sender"
+        },
+        "messageContext": {
+          "shape": "MessageContext"
+        }
+      }
+    },
+    "SendMessageOutput": {
+      "type": "structure",
+      "members": {
+        "messageId": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "Sender": {
+      "type": "string",
+      "enum": [
+        "USER",
+        "SYSTEM"
+      ]
+    },
+    "Sha256Checksum": {
+      "type": "string"
+    },
+    "StartTransformBuilderInput": {
+      "type": "structure",
+      "members": {
+        "transformationName": {
+          "shape": "String"
+        }
+      }
+    },
+    "StartTransformBuilderOutput": {
+      "type": "structure",
+      "required": [
+        "definitionId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "StartTransformExecInput": {
+      "type": "structure",
+      "required": [
+        "definitionId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid"
+        },
+        "inputArtifactId": {
+          "shape": "Uuid"
+        },
+        "name": {
+          "shape": "String"
+        }
+      }
+    },
+    "StartTransformExecOutput": {
+      "type": "structure",
+      "required": [
+        "jobId"
+      ],
+      "members": {
+        "jobId": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "StopTransformBuilderInput": {
+      "type": "structure",
+      "required": [
+        "definitionId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "definitionId"
+        }
+      }
+    },
+    "StopTransformBuilderOutput": {
+      "type": "structure",
+      "members": {}
+    },
+    "StopTransformExecInput": {
+      "type": "structure",
+      "required": [
+        "definitionId",
+        "execId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "definitionId"
+        },
+        "execId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "execId"
+        }
+      }
+    },
+    "StopTransformExecOutput": {
+      "type": "structure",
+      "members": {}
+    },
+    "String": {
+      "type": "string"
+    },
+    "StringList": {
+      "type": "list",
+      "member": {
+        "shape": "String"
+      }
+    },
+    "Timestamp": {
+      "type": "timestamp"
+    },
+    "TransformBuilderMetadata": {
+      "type": "structure",
+      "required": [
+        "definitionId",
+        "definition"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid"
+        },
+        "name": {
+          "shape": "String"
+        },
+        "status": {
+          "shape": "TransformBuilderStatus"
+        },
+        "inputArtifactIds": {
+          "shape": "Uuids"
+        },
+        "definition": {
+          "shape": "TransformDefinition"
+        }
+      }
+    },
+    "TransformBuilderStatus": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "RUNNING",
+        "DRAFTED",
+        "VALIDATING",
+        "VALIDATED",
+        "PUBLISHED",
+        "STOPPED",
+        "FAILED",
+        "DEPRECATED",
+        "AWAITING_HUMAN_INPUT"
+      ]
+    },
+    "TransformDefinition": {
+      "type": "structure",
+      "required": [
+        "definitionId",
+        "summary",
+        "criteria",
+        "implementationSteps",
+        "validationCriteria"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid"
+        },
+        "summary": {
+          "shape": "String"
+        },
+        "criteria": {
+          "shape": "StringList"
+        },
+        "implementationSteps": {
+          "shape": "StringList"
+        },
+        "validationCriteria": {
+          "shape": "StringList"
+        }
+      }
+    },
+    "TransformDefinitions": {
+      "type": "list",
+      "member": {
+        "shape": "TransformDefinition"
+      }
+    },
+    "TransformExecMetadata": {
+      "type": "structure",
+      "required": [
+        "definitionId",
+        "execId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid"
+        },
+        "execId": {
+          "shape": "Uuid"
+        },
+        "name": {
+          "shape": "String"
+        },
+        "status": {
+          "shape": "TransformExecStatus"
+        },
+        "inputArtifactId": {
+          "shape": "Uuid"
+        },
+        "outputArtifactId": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "TransformExecStatus": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "ASSESSING",
+        "TRANSFORMING",
+        "VALIDATING",
+        "COMPLETED",
+        "STOPPED",
+        "FAILED",
+        "AWAITING_HUMAN_INPUT"
+      ]
+    },
+    "UpdateTransformBuilderInput": {
+      "type": "structure",
+      "required": [
+        "definitionId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "definitionId"
+        },
+        "status": {
+          "shape": "TransformBuilderStatus"
+        },
+        "inputArtifactIds": {
+          "shape": "Uuids"
+        },
+        "definition": {
+          "shape": "TransformDefinition"
+        }
+      }
+    },
+    "UpdateTransformBuilderOutput": {
+      "type": "structure",
+      "members": {}
+    },
+    "UpdateTransformExecInput": {
+      "type": "structure",
+      "required": [
+        "definitionId",
+        "execId"
+      ],
+      "members": {
+        "definitionId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "definitionId"
+        },
+        "execId": {
+          "shape": "Uuid",
+          "location": "uri",
+          "locationName": "execId"
+        },
+        "status": {
+          "shape": "TransformExecStatus"
+        },
+        "inputArtifact": {
+          "shape": "Uuid"
+        },
+        "outputArtifact": {
+          "shape": "Uuid"
+        }
+      }
+    },
+    "UpdateTransformExecOutput": {
+      "type": "structure",
+      "members": {}
+    },
+    "Uuid": {
+      "type": "string",
+      "max": 64,
+      "min": 1,
+      "pattern": "[a-z0-9-]+"
+    },
+    "Uuids": {
+      "type": "list",
+      "member": {
+        "shape": "Uuid"
+      }
+    }
+  }
+}

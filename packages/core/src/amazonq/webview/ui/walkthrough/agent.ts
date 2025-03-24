@@ -197,5 +197,36 @@ Upgrade library and language versions in your codebase.
                 },
             ],
         },
+        {
+            type: ChatItemType.ANSWER,
+            hoverEffect: true,
+            body: `### SEGG
+Learn how to upgrade library and language versions for your codebases.
+`,
+            icon: MynahIcons.TRANSFORM,
+            footer: {
+                tabbedContent: createdTabbedData(
+                    ['Upgrade Java language and dependency versions', 'Convert embedded SQL code in Java apps'],
+                    '/seg'
+                ),
+            },
+            buttons: [
+                {
+                    status: 'clear',
+                    id: 'user-guide-gumby',
+                    disabled: false,
+                    text: 'Read user guide',
+                },
+                {
+                    status: 'main',
+                    disabled: false,
+                    flash: 'once',
+                    fillState: 'hover',
+                    icon: MynahIcons.RIGHT_OPEN,
+                    id: 'quick-start-seg',
+                    text: `Quick start with **/seg**`,
+                },
+            ],
+        },
     ],
 }

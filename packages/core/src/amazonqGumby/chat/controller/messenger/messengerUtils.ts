@@ -28,6 +28,7 @@ export enum ButtonActions {
     CANCEL_JAVA_HOME_FORM = 'gumbyJavaHomeFormCancel',
     CONFIRM_START_TRANSFORMATION_FLOW = 'gumbyStartTransformation',
     OPEN_FILE = 'gumbyOpenFile',
+    UPLOAD_ZIP_FILE = 'gumbyUploadZipFile',
     OPEN_BUILD_LOG = 'gumbyOpenBuildLog',
 }
 
@@ -39,9 +40,8 @@ export enum GumbyCommands {
 
 export default class MessengerUtils {
     static createJavaHomePrompt = (): string => {
-        let javaHomePrompt = `${
-            CodeWhispererConstants.enterJavaHomeChatMessage
-        } ${transformByQState.getSourceJDKVersion()}. \n`
+        let javaHomePrompt = `${CodeWhispererConstants.enterJavaHomeChatMessage
+            } ${transformByQState.getSourceJDKVersion()}. \n`
         if (os.platform() === 'win32') {
             javaHomePrompt += CodeWhispererConstants.windowsJavaHomeHelpChatMessage
         } else if (os.platform() === 'darwin') {
